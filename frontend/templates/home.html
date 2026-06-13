@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreshScan AI - Home</title>
+<link rel="stylesheet" href="/frontend/static/style.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <span class="leaf-icon">🍃</span> FreshScan <span class="ai-text">AI</span>
+  </div>
+  <div class="nav-links">
+    <a href="home.html" class="nav-link active">Home</a>
+    <a href="classify.html" class="nav-link">Klasifikasi</a>
+    <a href="about.html" class="nav-link">Tentang</a>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<section id="home" class="page active">
+  <div class="bg-blobs">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+    <div class="blob blob4"></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero glass">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <div class="hero-badge">🥦 Computer Vision · Deep Learning</div>
+        <h1>FreshScan <span class="ai-text">AI</span></h1>
+        <p class="hero-desc">
+          Sistem berbasis web yang menggunakan teknologi Computer Vision dan Deep Learning
+          untuk mengidentifikasi tingkat kesegaran buah dan sayuran dari gambar yang Anda unggah.
+          Cukup unggah foto, dan sistem akan mengklasifikasikan produk sebagai <strong>segar</strong>
+          atau <strong>tidak segar</strong>, lengkap dengan informasi kualitas dan rekomendasi penyimpanan.
+        </p>
+        <div class="hero-actions">
+          <a href="classify.html" class="btn-primary" id="startBtn">Mulai Klasifikasi →</a>
+          <a href="about.html" class="btn-ghost">Pelajari Lebih Lanjut</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="scan-frame">
+          <div class="scan-line"></div>
+          <div class="scan-corner tl"></div>
+          <div class="scan-corner tr"></div>
+          <div class="scan-corner bl"></div>
+          <div class="scan-corner br"></div>
+          <div class="scan-emoji">🥑</div>
+          <div class="scan-tag scan-tag-1">✅ Segar · 96.4%</div>
+          <div class="scan-tag scan-tag-2">🌡️ Simpan 4–7°C</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Why it matters -->
+  <div class="container narrative-section">
+    <div class="narrative-head">
+      <span class="eyebrow">Mengapa Ini Penting</span>
+      <h2 class="section-title">Bahan Pangan Membusuk Sebelum Sempat Diolah</h2>
+      <p class="section-sub">
+        Penilaian kesegaran secara manual sering tidak konsisten — tergantung pengalaman,
+        cahaya, dan kondisi mata orang yang memeriksa. Akibatnya, bahan yang sebenarnya
+        masih layak konsumsi terbuang sia-sia, sementara bahan yang sudah menurun
+        kualitasnya tetap dikonsumsi atau dijual.
+      </p>
+    </div>
+
+    <div class="narrative-rows">
+      <div class="narrative-row">
+        <div class="narrative-num">Konsumen</div>
+        <div class="narrative-body">
+          <h3>Belanja Lebih Cermat</h3>
+          <p>
+            Sebelum membeli atau mengolah bahan pangan, konsumen dapat memotret produk dan
+            langsung mengetahui kondisi kesegarannya — membantu menghindari pembelian bahan
+            yang kualitasnya sudah menurun tanpa terlihat jelas secara visual.
+          </p>
+        </div>
+      </div>
+      <div class="narrative-row">
+        <div class="narrative-num">Pelaku Usaha</div>
+        <div class="narrative-body">
+          <h3>Kontrol Kualitas Stok</h3>
+          <p>
+            Pedagang, restoran, dan UMKM pangan dapat melakukan pengecekan rutin terhadap
+            stok buah dan sayur secara objektif, sehingga pemilahan produk yang harus
+            segera dijual atau diolah dapat dilakukan lebih cepat dan konsisten.
+          </p>
+        </div>
+      </div>
+      <div class="narrative-row">
+        <div class="narrative-num">Sistem</div>
+        <div class="narrative-body">
+          <h3>Penilaian Berbasis Data</h3>
+          <p>
+            Model deep learning menganalisis warna, tekstur, dan bentuk dari gambar yang
+            diunggah, lalu menghasilkan klasifikasi beserta confidence score — meminimalkan
+            subjektivitas yang biasa terjadi pada pemeriksaan manual.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="container narrative-section">
+    <div class="narrative-head">
+      <span class="eyebrow">Cara Kerja</span>
+      <h2 class="section-title">Tiga Langkah Sederhana</h2>
+    </div>
+
+    <div class="steps-row">
+      <div class="step glass-light">
+        <div class="step-mark">01</div>
+        <h3>Unggah Gambar</h3>
+        <p>Ambil atau unggah foto buah maupun sayur yang ingin diperiksa kesegarannya melalui halaman Klasifikasi.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step glass-light">
+        <div class="step-mark">02</div>
+        <h3>Analisis Otomatis</h3>
+        <p>Sistem mengekstraksi fitur visual seperti warna, tekstur, dan bentuk menggunakan model CNN yang telah dilatih.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step glass-light">
+        <div class="step-mark">03</div>
+        <h3>Hasil & Rekomendasi</h3>
+        <p>Dapatkan label kesegaran, confidence score, serta rekomendasi penyimpanan dan penanganan yang sesuai.</p>
+      </div>
+    </div>
+
+    <div class="cta-banner">
+      <div>
+        <h3>Siap mencoba FreshScan AI?</h3>
+        <p>Unggah gambar bahan pangan Anda dan dapatkan hasil analisis dalam hitungan detik.</p>
+      </div>
+      <a href="classify.html" class="btn-primary" id="startBtn2">Mulai Klasifikasi →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>© 2026 FreshScan AI · Sistem Klasifikasi Kesegaran Buah & Sayur berbasis Computer Vision & Deep Learning</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreshScan AI - Tentang</title>
+<link rel="stylesheet" href="/frontend/static/style.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <span class="leaf-icon">🍃</span> FreshScan <span class="ai-text">AI</span>
+  </div>
+  <div class="nav-links">
+    <a href="home.html" class="nav-link">Home</a>
+    <a href="classify.html" class="nav-link">Klasifikasi</a>
+    <a href="about.html" class="nav-link active">Tentang</a>
+  </div>
+</nav>
+
+<!-- ABOUT PAGE -->
+<section id="about" class="page active">
+  <div class="bg-blobs">
+    <div class="blob blob1"></div>
+    <div class="blob blob3"></div>
+  </div>
+
+  <div class="container">
+    <h2 class="section-title">Tentang Proyek</h2>
+    <p class="section-sub">Informasi mengenai latar belakang, teknologi, dan tim pengembang.</p>
+
+    <div class="about-grid">
+
+      <div class="card glass about-card">
+        <div class="about-icon">🎯</div>
+        <h3>Tujuan Proyek</h3>
+        <p>
+          FreshScan AI dikembangkan untuk membantu konsumen maupun pelaku usaha dalam
+          melakukan penilaian kualitas bahan pangan secara cepat, mudah, dan objektif,
+          tanpa memerlukan keahlian khusus dalam menilai kesegaran buah dan sayuran secara manual.
+        </p>
+      </div>
+
+      <div class="card glass about-card">
+        <div class="about-icon">🛠️</div>
+        <h3>Teknologi yang Digunakan</h3>
+        <ul class="tech-list">
+          <li><b>Frontend:</b> HTML, CSS, JavaScript</li>
+          <li><b>Computer Vision:</b> Pengolahan dan ekstraksi fitur gambar</li>
+          <li><b>Deep Learning:</b> Convolutional Neural Network (CNN)</li>
+          <li><b>Framework Model:</b> TensorFlow / Keras</li>
+          <li><b>Bahasa Pemrograman Model:</b> Python</li>
+        </ul>
+      </div>
+
+      <div class="card glass about-card">
+        <div class="about-icon">📊</div>
+        <h3>Dataset / Sumber Data</h3>
+        <p>
+          Model dilatih menggunakan kumpulan gambar buah dan sayuran segar maupun tidak segar
+          yang dikumpulkan dari sumber dataset publik (misalnya Kaggle - Fruits Fresh and Rotten
+          for Classification) serta dokumentasi tambahan untuk memperkaya variasi data.
+        </p>
+      </div>
+
+      <div class="card glass about-card">
+        <div class="about-icon">🧠</div>
+        <h3>Model yang Digunakan</h3>
+        <p>
+          Sistem menggunakan arsitektur <b>Convolutional Neural Network (CNN)</b> untuk
+          mengekstraksi fitur visual dari gambar (warna, tekstur, bentuk) dan mengklasifikasikan
+          tingkat kesegaran produk ke dalam kategori <b>Segar</b> atau <b>Tidak Segar</b>
+          beserta skor kepercayaan (confidence score).
+        </p>
+      </div>
+
+      <div class="card glass about-card team-card">
+        <div class="about-icon">👥</div>
+        <h3>Anggota Kelompok</h3>
+        <div class="team-grid">
+          <div class="team-member">
+            <div class="team-avatar">👤</div>
+            <p class="team-name">Muhammad Rafi Pratama</p>
+            <span class="team-role">101012300161</span>
+          </div>
+          <div class="team-member">
+            <div class="team-avatar">👤</div>
+            <p class="team-name">Bagus Mido Wijaya</p>
+            <span class="team-role">101012430011</span>
+          </div>
+          <div class="team-member">
+            <div class="team-avatar">👤</div>
+            <p class="team-name">Stefanus Indra Prasetya</p>
+            <span class="team-role">101012430016</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card glass about-card team-card">
+        <div class="about-icon">🗺️</div>
+        <h3>Alur Pengembangan Sistem</h3>
+        <div class="roadmap-row">
+          <div class="roadmap-item">
+            <div class="roadmap-num">1</div>
+            <h4>Pengumpulan Data</h4>
+            <p>Mengumpulkan dataset gambar buah dan sayur segar maupun tidak segar dari sumber publik.</p>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-num">2</div>
+            <h4>Pra-pemrosesan</h4>
+            <p>Resize, normalisasi, dan augmentasi gambar agar model lebih general dan robust.</p>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-num">3</div>
+            <h4>Pelatihan Model</h4>
+            <p>Melatih model CNN untuk mengenali pola visual khas bahan pangan segar dan tidak segar.</p>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-num">4</div>
+            <h4>Integrasi Web</h4>
+            <p>Menghubungkan model dengan antarmuka web agar pengguna dapat melakukan prediksi secara langsung.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>© 2026 FreshScan AI · Sistem Klasifikasi Kesegaran Buah & Sayur berbasis Computer Vision & Deep Learning</p>
+</footer>
+
+</body>
+</html>
