@@ -2,13 +2,14 @@ import logging
 import numpy as np
 import cv2
 import tensorflow as tf
-from flask import Flask, request
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-
 
 logging.basicConfig(level=logging.INFO)
 
-app = Flask(__name__)
+app = Flask(__name__, 
+            template_folder='../frontend/templates',
+            static_folder='../frontend/static')
 
 CORS(app)
 
@@ -26,6 +27,17 @@ except Exception as e:
 
 kategori = ['Segar', 'Tidak Segar'] 
 
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/classify')
+def classify():
+    return render_template('classify.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -79,9 +91,14 @@ def predict():
             }
         
         hasil = kategori[predict_class]
+        if hasil == 'Segar':
+           pesan = 'Buah segar, aman untuk dikonsumsi'
+        else:
+            pesan = 'Buah tidak segar, sebaiknya tidak dikonsumsi'
         return {
             'prediction': hasil, 
-            'confidence': confidence_score
+            'confidence': confidence_score,
+            'pesan': pesan
         }
         
     except Exception as e:
