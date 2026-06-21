@@ -2,25 +2,46 @@ import logging
 import numpy as np
 import cv2
 import tensorflow as tf
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
-
+from utils.preprocessor import prepare_image
+from werkzeug.utils import secure_filename
 logging.basicConfig(level=logging.INFO)
 
-app = Flask(__name__)
+app = Flask(__name__, 
+            template_folder='../frontend/templates',
+            static_folder='../frontend/static')
+
+
 CORS(app)
+
 app.config.from_object('config.Config')
 
 model = None
+path_model = app.config.get('MODEL_PATH')
 try:
-    path_model = app.config['MODEL_PATH']
-    model = tf.keras.models.load_model(path_model)
-    logging.info(f"Berhasil memuat model dari: {path_model}")
+    if path_model:
+        model = tf.keras.models.load_model(path_model)
+        logging.info(f"Berhasil memuat model dari: {path_model}")
+    else:
+        logging.warning('MODEL_PATH not configured; model not loaded.')
 except Exception as e:
     logging.exception(f"Gagal memuat model dari {path_model}: {e}")
 
+
 kategori = ['Segar', 'Tidak Segar'] 
+
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/classify')
+def classify():
+    return render_template('classify.html')
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -35,58 +56,59 @@ def predict():
     if file.filename == '':
         return jsonify({'error': 'Nama file tidak boleh kosong'}), 400
 
-    ekstensi = file.filename.split('.')[-1].lower()
-    if ekstensi not in app.config['ALLOWED_EXTENSIONS']:
+    filename = secure_filename(file.filename)
+    if not filename:
+        return jsonify({'error': 'Nama file tidak valid'}), 400
+
+    if '.' not in filename:
+        return jsonify({'error': 'Nama file tidak memiliki ekstensi'}), 400
+
+    ekstensi = filename.rsplit('.', 1)[1].lower()
+    allowed = app.config.get('ALLOWED_EXTENSIONS', [])
+    if ekstensi not in allowed:
         return jsonify({'error': 'Format file tidak didukung'}), 400
 
     try:
+        
         file_data = file.read()
-        npimg = np.frombuffer(file_data, np.uint8)
-        img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+        img = prepare_image(file_data)
         
-        if img is None:
-            return jsonify({'error': 'Gagal membaca gambar, file mungkin rusak'}), 400
-
-        # --- PREPROCESSING YANG BENAR ---
-        img = cv2.resize(img, (224, 224))
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = np.expand_dims(img, axis=0)
-        img = preprocess_input(img) # Mengubah rentang pixel sesuai MobileNetV2
-        
-    except Exception as e:
-        logging.exception('Image preprocessing failed')
-        return jsonify({'error': f'Gagal memproses gambar secara matematis: {str(e)}'}), 400
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
 
     try:
+    
         prediction = model.predict(img)
+        probabilitas = float(prediction[0][0]) 
         
-        # --- LOGIKA KLASIFIKASI BINER (SIGMOID) ---
-        # prediction menghasilkan array seperti [[0.85]]
-        score = prediction[0][0]
         
-        # Mapping kelas: 'fresh': 0, 'rotten': 1 (Sesuai train.py)
-        if score >= 0.5:
-            predict_class = 1 # Tidak Segar
-            confidence_score = float(score) 
+        if probabilitas >= 0.5:
+            predict_class = 1  # Rotten
+            confidence_score = probabilitas
         else:
-            predict_class = 0 # Segar
-            confidence_score = float(1.0 - score) 
+            predict_class = 0  # Fresh
+            confidence_score = 1.0 - probabilitas 
             
+       
         if confidence_score < 0.70:
             return jsonify({
                 'prediction': 'Tidak Yakin, mohon foto ulang', 
-                'confidence': confidence_score
-            })
+                'confidence': round(confidence_score, 2)
+            }), 200
         
         hasil = kategori[predict_class]
+        pesan = 'Buah segar, aman untuk dikonsumsi' if hasil == 'Segar' else 'Buah tidak segar, sebaiknya tidak dikonsumsi'
+        
         return jsonify({
             'prediction': hasil, 
-            'confidence': confidence_score
-        })
+            'confidence': round(confidence_score, 2),
+            'pesan': pesan
+        }), 200
         
     except Exception as e:
         logging.exception('Prediction execution failed')
         return jsonify({'error': f'Terjadi kegagalan saat menjalankan prediksi: {str(e)}'}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

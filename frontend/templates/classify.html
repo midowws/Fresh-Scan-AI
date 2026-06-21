@@ -1,124 +1,93 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FreshScan AI - Klasifikasi</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../static/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreshScan AI - Klasifikasi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<!-- Navbar -->
 <nav class="navbar">
   <div class="nav-logo">
     <span class="leaf-icon">🍃</span> FreshScan <span class="ai-text">AI</span>
   </div>
   <div class="nav-links">
-    <a href="home.html" class="nav-link">Home</a>
-    <a href="classify.html" class="nav-link active">Klasifikasi</a>
-    <a href="about.html" class="nav-link">Tentang</a>
+    <a href="/" class="nav-link">Home</a>
+    <a href="/classify" class="nav-link">Klasifikasi</a>
+    <a href="/about" class="nav-link">Tentang</a>
   </div>
 </nav>
 
-<!-- CLASSIFICATION PAGE -->
 <section id="classify" class="page active">
-  <div class="bg-blobs">
-    <div class="blob blob1"></div>
-    <div class="blob blob2"></div>
-  </div>
-
   <div class="container">
     <h2 class="section-title">Klasifikasi Kesegaran</h2>
-    <p class="section-sub">Unggah gambar buah atau sayur untuk dianalisis oleh sistem.</p>
+    <p class="section-sub">Unggah foto buah atau sayur untuk mendapatkan penilaian kesegaran.</p>
 
-    <div class="classify-grid">
+    <div class="upload-area glass" id="dropArea">
 
-      <!-- Upload Card -->
-      <div class="card glass">
-        <h3>1. Unggah Gambar</h3>
-        <label for="fileInput" class="upload-area" id="dropArea">
-          <div class="upload-icon">📷</div>
-          <p id="uploadText">Klik atau seret gambar ke sini</p>
-          <span class="upload-hint">Format: JPG, PNG (maks. 5MB)</span>
-          <input type="file" id="fileInput" accept="image/*" hidden>
-        </label>
+      <input type="file" id="fileInput" name="file" accept=".jpg,.jpeg,.png"
+             style="position:absolute; opacity:0; width:0; height:0;">
 
-        <div class="preview-wrap" id="previewWrap" style="display:none;">
-          <p class="preview-label">Preview Gambar:</p>
-          <img id="previewImg" src="" alt="Preview gambar">
-        </div>
+      <label for="fileInput" class="file-label"
+             style="cursor:pointer; display:block; text-align:center; padding:12px 0;">
+        <span id="uploadText">📁 Pilih file atau seret ke sini</span>
+      </label>
 
-        <button class="btn-primary full-width" id="predictBtn" disabled>Prediksi Kesegaran</button>
-
-        <div id="errorBox" class="error-box" style="display:none;"></div>
-
-        <div class="tips-box">
-          <h4>📌 Tips Pengambilan Gambar</h4>
-          <ul>
-            <li>Pastikan pencahayaan cukup dan tidak backlight.</li>
-            <li>Fokuskan kamera pada satu jenis bahan pangan.</li>
-            <li>Hindari latar belakang yang terlalu ramai.</li>
-            <li>Ambil gambar dari jarak dekat agar detail tekstur terlihat jelas.</li>
-          </ul>
-        </div>
+      <div class="form-actions">
+        <button type="button" id="predictBtn" class="btn-primary" disabled>Unggah &amp; Analisis</button>
+        <button type="button" id="resetBtn" class="btn-ghost">Reset</button>
       </div>
 
-      <!-- Result Card -->
-      <div class="card glass">
-        <h3>2. Hasil Klasifikasi</h3>
-
-        <div id="resultEmpty" class="result-empty">
-          <div class="empty-icon">🥑</div>
-          <p>Hasil akan ditampilkan di sini setelah Anda menekan tombol "Prediksi Kesegaran".</p>
-        </div>
-
-        <div id="resultContent" class="result-content" style="display:none;">
-          <div class="result-status" id="resultStatus">
-            <span class="status-icon" id="statusIcon">✅</span>
-            <div>
-              <p class="status-label">Status Kesegaran</p>
-              <h3 id="statusText">Segar</h3>
-            </div>
-          </div>
-
-          <div class="confidence-wrap">
-            <div class="confidence-header">
-              <span>Confidence Score</span>
-              <span id="confidenceValue">0%</span>
-            </div>
-            <div class="confidence-bar">
-              <div class="confidence-fill" id="confidenceFill"></div>
-            </div>
-          </div>
-
-          <div class="recommendation">
-            <h4>💡 Rekomendasi Penyimpanan & Penanganan</h4>
-            <p id="recommendationText">—</p>
-          </div>
-
-          <div class="detail-info">
-            <h4>📋 Detail Klasifikasi</h4>
-            <ul id="detailList">
-              <li><span>Jenis Produk</span><b id="detailType">—</b></li>
-              <li><span>Estimasi Kualitas</span><b id="detailQuality">—</b></li>
-              <li><span>Waktu Analisis</span><b id="detailTime">—</b></li>
-            </ul>
-          </div>
-        </div>
+      <div id="previewWrap" style="display:none; margin-top:16px; text-align:center;">
+        <img id="previewImg" src="" alt="Preview gambar"
+             style="max-width:100%; max-height:300px; border-radius:8px;">
       </div>
+
+      <div id="errorBox"
+           style="display:none; color:#c0392b; margin-top:10px; font-size:0.9rem; text-align:center;"></div>
 
     </div>
+
+    <div id="resultEmpty" class="result-empty">Belum ada hasil. Unggah gambar untuk memulai.</div>
+
+    <div id="resultContent" class="result-content" style="display:none;">
+      <div id="resultStatus" class="result-status">
+        <div id="statusIcon" class="status-icon">❓</div>
+        <div id="statusText" class="status-text">Menunggu</div>
+      </div>
+
+      <div class="confidence">
+        <div class="confidence-bar">
+          <div id="confidenceFill" class="confidence-fill" style="width:0%"></div>
+        </div>
+        <div id="confidenceValue" class="confidence-value">0%</div>
+      </div>
+
+      <div class="details">
+        <div><b>Tipe:</b> <span id="detailType">—</span></div>
+        <div><b>Kualitas:</b> <span id="detailQuality">—</span></div>
+        <div><b>Waktu:</b> <span id="detailTime">—</span></div>
+      </div>
+
+      <div class="recommendation">
+        <p id="recommendationText">—</p>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <footer class="footer">
-  <p>© 2026 FreshScan AI · Sistem Klasifikasi Kesegaran Buah & Sayur berbasis Computer Vision & Deep Learning</p>
+  <p>© 2026 FreshScan AI · Sistem Klasifikasi Kesegaran Buah &amp; Sayur berbasis Computer Vision &amp; Deep Learning</p>
 </footer>
 
-<script src="../js/result.js"></script>
-<script src="../js/upload.js"></script>
+<!-- result.js dulu, baru upload.js -->
+<script src="{{ url_for('static', filename='js/result.js') }}"></script>
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+
 </body>
 </html>
