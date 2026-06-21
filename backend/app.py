@@ -4,23 +4,27 @@ import cv2
 import tensorflow as tf
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-
+from utils.preprocessor import prepare_image
+from werkzeug.utils import secure_filename
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__, 
             template_folder='../frontend/templates',
             static_folder='../frontend/static')
 
+
 CORS(app)
 
 app.config.from_object('config.Config')
 
 model = None
+path_model = app.config.get('MODEL_PATH')
 try:
-    
-    path_model = app.config['MODEL_PATH'] 
-    model = tf.keras.models.load_model(path_model)
-    logging.info(f"Berhasil memuat model dari: {path_model}")
+    if path_model:
+        model = tf.keras.models.load_model(path_model)
+        logging.info(f"Berhasil memuat model dari: {path_model}")
+    else:
+        logging.warning('MODEL_PATH not configured; model not loaded.')
 except Exception as e:
     logging.exception(f"Gagal memuat model dari {path_model}: {e}")
 
@@ -31,80 +35,80 @@ kategori = ['Segar', 'Tidak Segar']
 def home():
     return render_template('home.html')
 
-@app.route('/classify')
-def classify():
-    return render_template('classify.html')
-
 @app.route('/about')
 def about():
     return render_template('about.html')
 
+@app.route('/classify')
+def classify():
+    return render_template('classify.html')
+
 @app.route("/predict", methods=["POST"])
 def predict():
-    
     if model is None:
-        return {'error': 'Model tidak tersedia di server'}, 500
+        return jsonify({'error': 'Model tidak tersedia di server'}), 500
 
-   
     if 'file' not in request.files:
-        return {'error': 'Tidak ada file yang diunggah'}, 400
+        return jsonify({'error': 'Tidak ada file yang diunggah'}), 400
 
     file = request.files['file']
 
     if file.filename == '':
-        return {'error': 'Nama file tidak boleh kosong'}, 400
+        return jsonify({'error': 'Nama file tidak boleh kosong'}), 400
 
-    
-    ekstensi = file.filename.split('.')[-1].lower()
-    if ekstensi not in app.config['ALLOWED_EXTENSIONS']:
-        return {'error': 'Format file tidak didukung'}, 400
+    filename = secure_filename(file.filename)
+    if not filename:
+        return jsonify({'error': 'Nama file tidak valid'}), 400
 
-    
-    file_data = file.read()
-    npimg = np.frombuffer(file_data, np.uint8)
-    img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
-    
-    if img is None:
-        return {'error': 'Gagal membaca gambar, file mungkin rusak'}, 400
+    if '.' not in filename:
+        return jsonify({'error': 'Nama file tidak memiliki ekstensi'}), 400
+
+    ekstensi = filename.rsplit('.', 1)[1].lower()
+    allowed = app.config.get('ALLOWED_EXTENSIONS', [])
+    if ekstensi not in allowed:
+        return jsonify({'error': 'Format file tidak didukung'}), 400
 
     try:
         
-        img = cv2.resize(img, (224, 224))
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = img / 255.0
-        img = np.expand_dims(img, axis=0)
-    except Exception as e:
-        logging.exception('Image preprocessing failed')
-        return {'error': f'Gagal memproses gambar secara matematis: {str(e)}'}, 400
+        file_data = file.read()
+        img = prepare_image(file_data)
+        
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
 
-   
     try:
+    
         prediction = model.predict(img)
-        predict_class = int(np.argmax(prediction, axis=1)[0])
-        confidence_score = float(np.max(prediction))
+        probabilitas = float(prediction[0][0]) 
         
         
+        if probabilitas >= 0.5:
+            predict_class = 1  # Rotten
+            confidence_score = probabilitas
+        else:
+            predict_class = 0  # Fresh
+            confidence_score = 1.0 - probabilitas 
+            
+       
         if confidence_score < 0.70:
-            return {
+            return jsonify({
                 'prediction': 'Tidak Yakin, mohon foto ulang', 
-                'confidence': confidence_score
-            }
+                'confidence': round(confidence_score, 2)
+            }), 200
         
         hasil = kategori[predict_class]
-        if hasil == 'Segar':
-           pesan = 'Buah segar, aman untuk dikonsumsi'
-        else:
-            pesan = 'Buah tidak segar, sebaiknya tidak dikonsumsi'
-        return {
+        pesan = 'Buah segar, aman untuk dikonsumsi' if hasil == 'Segar' else 'Buah tidak segar, sebaiknya tidak dikonsumsi'
+        
+        return jsonify({
             'prediction': hasil, 
-            'confidence': confidence_score,
+            'confidence': round(confidence_score, 2),
             'pesan': pesan
-        }
+        }), 200
         
     except Exception as e:
-        
         logging.exception('Prediction execution failed')
-        return {'error': f'Terjadi kegagalan saat menjalankan prediksi: {str(e)}'}, 500
+        return jsonify({'error': f'Terjadi kegagalan saat menjalankan prediksi: {str(e)}'}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

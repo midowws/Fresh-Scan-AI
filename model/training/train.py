@@ -59,7 +59,7 @@ print("========================\n")
 # ==================================================
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
-EPOCHS = 5
+EPOCHS = 11
 
 # ==================================================
 # DATA GENERATOR
@@ -67,7 +67,12 @@ EPOCHS = 5
 print("Membuat Data Generator...")
 
 train_datagen = ImageDataGenerator(
-    preprocessing_function=preprocess_input
+    preprocessing_function=preprocess_input,
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    horizontal_flip=True,
+    zoom_range=0.2
 )
 
 test_datagen = ImageDataGenerator(
