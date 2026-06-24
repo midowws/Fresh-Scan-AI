@@ -91,6 +91,7 @@ predictBtn.addEventListener('click', async () => {
   clearError();
   predictBtn.disabled = true;
   predictBtn.textContent = 'Menganalisis...';
+  previewImg.classList.add('analyzing');
 
   const formData = new FormData();
   formData.append('file', selectedFile);
@@ -118,5 +119,6 @@ predictBtn.addEventListener('click', async () => {
   } finally {
     predictBtn.disabled = false;
     predictBtn.textContent = 'Unggah & Analisis';
+    previewImg.classList.remove('analyzing');
   }
 });
