@@ -74,7 +74,7 @@ def predict():
     try:
         prediction = model.predict(img)
         
-        #ppakai llogic recomencer baru
+        # --- MENGGUNAKAN LOGIKA RECOMMENDER BARU ---
         hasil_analisis = analyze_prediction(prediction)
         
         confidence_score = hasil_analisis['confidence']
