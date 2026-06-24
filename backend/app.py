@@ -5,16 +5,16 @@ import tensorflow as tf
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from utils.preprocessor import prepare_image
+from utils.recommender import analyze_prediction
 from werkzeug.utils import secure_filename
+
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__, 
             template_folder='../frontend/templates',
             static_folder='../frontend/static')
 
-
 CORS(app)
-
 app.config.from_object('config.Config')
 
 model = None
@@ -27,9 +27,6 @@ try:
         logging.warning('MODEL_PATH not configured; model not loaded.')
 except Exception as e:
     logging.exception(f"Gagal memuat model dari {path_model}: {e}")
-
-
-kategori = ['Segar', 'Tidak Segar'] 
 
 @app.route('/')
 def home():
@@ -69,46 +66,37 @@ def predict():
         return jsonify({'error': 'Format file tidak didukung'}), 400
 
     try:
-        
         file_data = file.read()
         img = prepare_image(file_data)
-        
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
 
     try:
-    
         prediction = model.predict(img)
-        probabilitas = float(prediction[0][0]) 
         
+        #ppakai llogic recomencer baru
+        hasil_analisis = analyze_prediction(prediction)
         
-        if probabilitas >= 0.5:
-            predict_class = 1  # Rotten
-            confidence_score = probabilitas
-        else:
-            predict_class = 0  # Fresh
-            confidence_score = 1.0 - probabilitas 
-            
-       
-        if confidence_score < 0.70:
+        confidence_score = hasil_analisis['confidence']
+        
+        if confidence_score < 0.60:
             return jsonify({
                 'prediction': 'Tidak Yakin, mohon foto ulang', 
-                'confidence': round(confidence_score, 2)
+                'confidence': round(confidence_score, 2),
+                'pesan': 'Sistem kurang yakin. Mohon foto ulang dengan pencahayaan dan fokus yang lebih baik.',
+                'tipe': 'Tidak Diketahui'
             }), 200
         
-        hasil = kategori[predict_class]
-        pesan = 'Buah segar, aman untuk dikonsumsi' if hasil == 'Segar' else 'Buah tidak segar, sebaiknya tidak dikonsumsi'
-        
         return jsonify({
-            'prediction': hasil, 
+            'prediction': hasil_analisis['kualitas'], 
             'confidence': round(confidence_score, 2),
-            'pesan': pesan
+            'pesan': hasil_analisis['pesan_rekomendasi'],
+            'tipe': hasil_analisis['tipe_item']
         }), 200
         
     except Exception as e:
         logging.exception('Prediction execution failed')
         return jsonify({'error': f'Terjadi kegagalan saat menjalankan prediksi: {str(e)}'}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
