@@ -40,12 +40,11 @@
         <h1>FreshScan <span class="ai-text">AI</span></h1>
         <p class="hero-desc">
           Sistem berbasis web yang menggunakan teknologi Computer Vision dan Deep Learning
-          untuk mengidentifikasi tingkat kesegaran buah dan sayuran dari gambar yang Anda unggah.
-          Cukup unggah foto, dan sistem akan mengklasifikasikan produk sebagai <strong>segar</strong>
-          atau <strong>tidak segar</strong>, lengkap dengan informasi kualitas dan rekomendasi penyimpanan.
+          untuk mengidentifikasi kesegaran komoditas spesifik <strong>(Apel, Jeruk, Pisang, Mentimun, Okra, dan Tomat)</strong>.
+          Cukup unggah foto, dan sistem akan mengklasifikasikan kondisi produk secara presisi, lengkap dengan informasi kualitas dan rekomendasi penyimpanan.
         </p>
         <div class="hero-actions">
-          <a href="classify.html" class="btn-primary" id="startBtn">Mulai Klasifikasi →</a>
+          <a href="/classify" class="btn-primary" id="startBtn">Mulai Klasifikasi →</a>
           <a href="about.html" class="btn-ghost">Pelajari Lebih Lanjut</a>
         </div>
       </div>
@@ -57,7 +56,7 @@
           <div class="scan-corner tr"></div>
           <div class="scan-corner bl"></div>
           <div class="scan-corner br"></div>
-          <div class="scan-emoji">🥑</div>
+          <div class="scan-emoji">🍅</div>
           <div class="scan-tag scan-tag-1">✅ Segar · 96.4%</div>
           <div class="scan-tag scan-tag-2">🌡️ Simpan 4–7°C</div>
         </div>
@@ -71,7 +70,7 @@
       <span class="eyebrow">Mengapa Ini Penting</span>
       <h2 class="section-title">Bahan Pangan Membusuk Sebelum Sempat Diolah</h2>
       <p class="section-sub">
-        Penilaian kesegaran secara manual sering tidak konsisten — tergantung pengalaman,
+        Penilaian kesegaran secara manual sering tidak konsisten tergantung pengalaman,
         cahaya, dan kondisi mata orang yang memeriksa. Akibatnya, bahan yang sebenarnya
         masih layak konsumsi terbuang sia-sia, sementara bahan yang sudah menurun
         kualitasnya tetap dikonsumsi atau dijual.
@@ -147,7 +146,7 @@
         <h3>Siap mencoba FreshScan AI?</h3>
         <p>Unggah gambar bahan pangan Anda dan dapatkan hasil analisis dalam hitungan detik.</p>
       </div>
-      <a href="classify.html" class="btn-primary" id="startBtn2">Mulai Klasifikasi →</a>
+      <a href="/classify" class="btn-primary" id="startBtn2">Mulai Klasifikasi →</a>
     </div>
   </div>
 </section>
@@ -155,6 +154,5 @@
 <footer class="footer">
   <p>© 2026 FreshScan AI · Sistem Klasifikasi Kesegaran Buah & Sayur berbasis Computer Vision & Deep Learning</p>
 </footer>
-<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 </body>
 </html>
