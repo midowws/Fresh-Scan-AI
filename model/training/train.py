@@ -6,6 +6,8 @@ from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
 from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 
 # ==================================================
 # PATH PROJECT
@@ -15,75 +17,55 @@ BASE_DIR = os.getcwd()
 train_dir = os.path.join(BASE_DIR, "model", "dataset", "train")
 test_dir = os.path.join(BASE_DIR, "model", "dataset", "test")
 
-save_path = os.path.join(
-    BASE_DIR,
-    "model",
-    "saved_model",
-    "freshscan.h5"
-)
+save_path = os.path.join(BASE_DIR, "model", "saved_model", "freshscan.h5")
+
+# Pastikan folder saved_model ada
+os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
 # ==================================================
-# CEK PATH
+# INFO DATASET (DINAMIS 12 KELAS)
 # ==================================================
-print("\n===== PATH CHECK =====")
-print("Train Path :", train_dir)
-print("Test Path  :", test_dir)
-
-print("Train Exists :", os.path.exists(train_dir))
-print("Test Exists  :", os.path.exists(test_dir))
-
-# ==================================================
-# INFO DATASET
-# ==================================================
-train_fresh = len(os.listdir(os.path.join(train_dir, "fresh")))
-train_rotten = len(os.listdir(os.path.join(train_dir, "rotten")))
-
-test_fresh = len(os.listdir(os.path.join(test_dir, "fresh")))
-test_rotten = len(os.listdir(os.path.join(test_dir, "rotten")))
-
 print("\n===== DATASET INFO =====")
-print(f"Train Fresh  : {train_fresh}")
-print(f"Train Rotten : {train_rotten}")
-print(f"Total Train  : {train_fresh + train_rotten}")
-
-print()
-
-print(f"Test Fresh   : {test_fresh}")
-print(f"Test Rotten  : {test_rotten}")
-print(f"Total Test   : {test_fresh + test_rotten}")
-
-print("========================\n")
+try:
+    train_classes = os.listdir(train_dir)
+    print(f"Ditemukan {len(train_classes)} Kelas di Folder Train:")
+    for cls in sorted(train_classes):
+        jml = len(os.listdir(os.path.join(train_dir, cls)))
+        print(f" - {cls}: {jml} gambar")
+except FileNotFoundError:
+    print("⚠️ Folder dataset belum ditemukan!")
 
 # ==================================================
-# PARAMETER
+# PARAMETER TUNING
 # ==================================================
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
-EPOCHS = 11
+EPOCHS = 25 # Dinaikkan karena ada Early Stopping
 
 # ==================================================
-# DATA GENERATOR
+# DATA GENERATOR (AUGMENTASI)
 # ==================================================
-print("Membuat Data Generator...")
+print("\nMembuat Data Generator...")
 
 train_datagen = ImageDataGenerator(
     preprocessing_function=preprocess_input,
-    rotation_range=20,
+    rotation_range=30,
     width_shift_range=0.2,
     height_shift_range=0.2,
     horizontal_flip=True,
-    zoom_range=0.2
+    zoom_range=0.2,
+    shear_range=0.15,
+    fill_mode='nearest'
 )
 
-test_datagen = ImageDataGenerator(
-    preprocessing_function=preprocess_input
-)
+test_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
 
+# PERUBAHAN KRUSIAL: class_mode menjadi 'categorical'
 train_generator = train_datagen.flow_from_directory(
     train_dir,
     target_size=IMG_SIZE,
     batch_size=BATCH_SIZE,
-    class_mode='binary',
+    class_mode='categorical',
     shuffle=True
 )
 
@@ -91,23 +73,21 @@ test_generator = test_datagen.flow_from_directory(
     test_dir,
     target_size=IMG_SIZE,
     batch_size=BATCH_SIZE,
-    class_mode='binary',
+    class_mode='categorical',
     shuffle=False
 )
 
-# ==================================================
-# CLASS INFO
-# ==================================================
+num_classes = train_generator.num_classes
+
 print("\n===== CLASS INFO =====")
 print("Class Mapping :", train_generator.class_indices)
-print("Train Samples :", train_generator.samples)
-print("Test Samples  :", test_generator.samples)
+print(f"Total Kelas   : {num_classes}")
 print("======================\n")
 
 # ==================================================
-# LOAD MOBILENETV2
+# LOAD MOBILENETV2 & FINE-TUNING
 # ==================================================
-print("Loading MobileNetV2...")
+print("Loading MobileNetV2 dan Setup Fine-Tuning...")
 
 base_model = MobileNetV2(
     weights='imagenet',
@@ -115,70 +95,85 @@ base_model = MobileNetV2(
     input_shape=(224, 224, 3)
 )
 
-base_model.trainable = False
+# Membuka gembok seluruh base_model
+base_model.trainable = True
+
+# Mengunci kembali layer-layer awal, menyisakan 30 layer terakhir untuk dilatih ulang (Fine-tuning)
+for layer in base_model.layers[:-30]:
+    layer.trainable = False
 
 # ==================================================
-# CLASSIFICATION HEAD
+# CLASSIFICATION HEAD (MULTICLASS)
 # ==================================================
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
-x = Dropout(0.3)(x)
+x = Dropout(0.4)(x) # Dinaikkan sedikit untuk mencegah overfitting
 
-predictions = Dense(
-    1,
-    activation='sigmoid'
-)(x)
+# PERUBAHAN KRUSIAL: Dense sejumlah kelas, aktivasi Softmax
+predictions = Dense(num_classes, activation='softmax')(x)
 
-model = Model(
-    inputs=base_model.input,
-    outputs=predictions
-)
+model = Model(inputs=base_model.input, outputs=predictions)
 
 # ==================================================
-# COMPILE MODEL
+# COMPILE MODEL (LEARNING RATE KECIL)
 # ==================================================
+# Menggunakan loss categorical_crossentropy untuk > 2 kelas
 model.compile(
-    optimizer='adam',
-    loss='binary_crossentropy',
+    optimizer=Adam(learning_rate=0.0001), 
+    loss='categorical_crossentropy',
     metrics=['accuracy']
 )
 
-print("\n===== MODEL SIAP =====")
-print("Loss Function :", model.loss)
-print("======================\n")
+# ==================================================
+# CALLBACKS (ASISTEN TRAINING)
+# ==================================================
+# 1. Simpan model HANYA saat akurasi meningkat
+checkpoint = ModelCheckpoint(
+    save_path, 
+    monitor='val_accuracy', 
+    save_best_only=True, 
+    mode='max', 
+    verbose=1
+)
+
+# 2. Hentikan training jika tidak ada peningkatan selama 5 epoch
+early_stop = EarlyStopping(
+    monitor='val_accuracy', 
+    patience=5, 
+    restore_best_weights=True,
+    verbose=1
+)
+
+# 3. Turunkan kecepatan belajar jika model mentok
+reduce_lr = ReduceLROnPlateau(
+    monitor='val_loss', 
+    factor=0.2, 
+    patience=3, 
+    min_lr=1e-6,
+    verbose=1
+)
 
 # ==================================================
 # TRAINING
 # ==================================================
-print("Mulai Training...\n")
+print("\nMulai Training dengan Asisten Otomatis...\n")
 
 history = model.fit(
     train_generator,
     validation_data=test_generator,
-    epochs=EPOCHS
+    epochs=EPOCHS,
+    callbacks=[checkpoint, early_stop, reduce_lr]
 )
 
 # ==================================================
 # EVALUASI
 # ==================================================
-print("\nEvaluasi Model...")
+print("\nEvaluasi Model Terbaik...")
 
-loss, accuracy = model.evaluate(
-    test_generator,
-    verbose=1
-)
+loss, accuracy = model.evaluate(test_generator, verbose=1)
 
 print("\n===== HASIL AKHIR =====")
 print(f"Loss     : {loss:.4f}")
 print(f"Accuracy : {accuracy * 100:.2f}%")
+print("✅ MODEL TERBAIK TELAH DISIMPAN OTOMATIS")
 print("=======================\n")
-
-# ==================================================
-# SAVE MODEL
-# ==================================================
-print("Menyimpan Model...")
-
-model.save(save_path)
-
-print("\n✅ MODEL BERHASIL DISIMPAN")
-print("📁 Lokasi :", save_path)
