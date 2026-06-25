@@ -4,12 +4,25 @@ const fileInput   = document.getElementById('fileInput');
 const dropArea    = document.getElementById('dropArea');
 const uploadText  = document.getElementById('uploadText');
 const previewWrap = document.getElementById('previewWrap');
+<<<<<<< HEAD:frontend/static/js/upload.js
 const previewImg  = document.getElementById('previewImg');
 const predictBtn  = document.getElementById('predictBtn');
 const resetBtn    = document.getElementById('resetBtn');
 const errorBox    = document.getElementById('errorBox');
+=======
+const previewImg = document.getElementById('previewImg');
+const openCameraBtn = document.getElementById('openCameraBtn');
+const cameraPanel = document.getElementById('cameraPanel');
+const cameraVideo = document.getElementById('cameraVideo');
+const captureBtn = document.getElementById('captureBtn');
+const closeCameraBtn = document.getElementById('closeCameraBtn');
+const predictBtn = document.getElementById('predictBtn');
+const resetBtn = document.getElementById('resetBtn');
+const errorBox = document.getElementById('errorBox');
+>>>>>>> c724260 (Update tampilan dan tambah fitur):frontend/js/upload.js
 
 let selectedFile = null;
+let cameraStream = null;
 
 function showError(message) {
   errorBox.textContent = message;
@@ -64,6 +77,85 @@ fileInput.addEventListener('change', (e) => {
   handleFile(e.target.files[0]);
 });
 
+<<<<<<< HEAD:frontend/static/js/upload.js
+=======
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+  cameraVideo.srcObject = null;
+}
+
+function openCamera() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showError('Kamera tidak tersedia di perangkat ini.');
+    return;
+  }
+
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(stream => {
+      cameraStream = stream;
+      cameraVideo.srcObject = stream;
+      cameraPanel.style.display = 'block';
+      openCameraBtn.disabled = true;
+      clearError();
+    })
+    .catch(err => {
+      console.error(err);
+      showError('Gagal membuka kamera. Periksa izin dan perangkat kamera.');
+    });
+}
+
+function capturePhoto() {
+  if (!cameraVideo.srcObject) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = cameraVideo.videoWidth;
+  canvas.height = cameraVideo.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+
+  canvas.toBlob((blob) => {
+    if (!blob) {
+      showError('Gagal mengambil foto. Coba lagi.');
+      return;
+    }
+
+    const file = new File([blob], 'camera-photo.png', { type: 'image/png' });
+    handleFile(file);
+    stopCamera();
+    cameraPanel.style.display = 'none';
+    openCameraBtn.disabled = false;
+  }, 'image/png');
+}
+
+function resetUpload() {
+  selectedFile = null;
+  previewImg.src = '';
+  previewWrap.style.display = 'none';
+  uploadText.textContent = 'Klik atau seret gambar ke sini';
+  predictBtn.disabled = true;
+  fileInput.value = '';
+  clearError();
+  stopCamera();
+  cameraPanel.style.display = 'none';
+  openCameraBtn.disabled = false;
+  if (typeof resetResult === 'function') resetResult();
+}
+
+openCameraBtn.addEventListener('click', openCamera);
+captureBtn.addEventListener('click', capturePhoto);
+closeCameraBtn.addEventListener('click', () => {
+  stopCamera();
+  cameraPanel.style.display = 'none';
+  openCameraBtn.disabled = false;
+});
+
+resetBtn.addEventListener('click', resetUpload);
+
+// Drag & drop
+>>>>>>> c724260 (Update tampilan dan tambah fitur):frontend/js/upload.js
 ['dragenter', 'dragover'].forEach(evt => {
   dropArea.addEventListener(evt, (e) => {
     e.preventDefault();
