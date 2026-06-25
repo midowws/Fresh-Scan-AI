@@ -4,22 +4,15 @@ const fileInput   = document.getElementById('fileInput');
 const dropArea    = document.getElementById('dropArea');
 const uploadText  = document.getElementById('uploadText');
 const previewWrap = document.getElementById('previewWrap');
-<<<<<<< HEAD:frontend/static/js/upload.js
 const previewImg  = document.getElementById('previewImg');
-const predictBtn  = document.getElementById('predictBtn');
-const resetBtn    = document.getElementById('resetBtn');
-const errorBox    = document.getElementById('errorBox');
-=======
-const previewImg = document.getElementById('previewImg');
 const openCameraBtn = document.getElementById('openCameraBtn');
 const cameraPanel = document.getElementById('cameraPanel');
 const cameraVideo = document.getElementById('cameraVideo');
 const captureBtn = document.getElementById('captureBtn');
 const closeCameraBtn = document.getElementById('closeCameraBtn');
-const predictBtn = document.getElementById('predictBtn');
-const resetBtn = document.getElementById('resetBtn');
-const errorBox = document.getElementById('errorBox');
->>>>>>> c724260 (Update tampilan dan tambah fitur):frontend/js/upload.js
+const predictBtn  = document.getElementById('predictBtn');
+const resetBtn    = document.getElementById('resetBtn');
+const errorBox    = document.getElementById('errorBox');
 
 let selectedFile = null;
 let cameraStream = null;
@@ -77,8 +70,6 @@ fileInput.addEventListener('change', (e) => {
   handleFile(e.target.files[0]);
 });
 
-<<<<<<< HEAD:frontend/static/js/upload.js
-=======
 function stopCamera() {
   if (cameraStream) {
     cameraStream.getTracks().forEach(track => track.stop());
@@ -155,7 +146,6 @@ closeCameraBtn.addEventListener('click', () => {
 resetBtn.addEventListener('click', resetUpload);
 
 // Drag & drop
->>>>>>> c724260 (Update tampilan dan tambah fitur):frontend/js/upload.js
 ['dragenter', 'dragover'].forEach(evt => {
   dropArea.addEventListener(evt, (e) => {
     e.preventDefault();
@@ -174,8 +164,6 @@ dropArea.addEventListener('drop', (e) => {
   const file = e.dataTransfer.files[0];
   if (file) handleFile(file);
 });
-
-resetBtn.addEventListener('click', () => resetAll());
 
 predictBtn.addEventListener('click', async () => {
   if (!selectedFile) return;

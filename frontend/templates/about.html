@@ -4,21 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FreshScan AI - Tentang</title>
-<<<<<<< HEAD
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-=======
-<link rel="stylesheet" href="/frontend/static/style.css">
-<script>
-  (function(){
-    var t = localStorage.getItem("freshscan-theme");
-    if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", t);
-  })();
-</script>
->>>>>>> c724260 (Update tampilan dan tambah fitur)
 </head>
 <body>
 
@@ -33,9 +22,9 @@
    <a href="/about" class="nav-link">Tentang</a>
   </div>
   <div class="nav-right">
-    <a href="about.html" class="lab-badge" title="Laboratorium Computer Vision & AI">
+    <a href="/about" class="lab-badge" title="Laboratorium Computer Vision & AI">
       <span class="lab-badge-mark">
-        <img src="../component/IMV.jpeg" alt="Logo Lab IMV" />
+        <img src="{{ url_for('static', filename='component/IMV.jpeg') }}" alt="Logo Lab IMV" />
       </span>
       <span class="lab-badge-text">
         <span class="lab-name">IMV LABORATORY</span>
@@ -111,7 +100,7 @@
         <div class="team-grid">
           <div class="team-member">
             <div class="team-avatar-ring">
-              <div class="team-avatar has-image" style="background-image: url('../component/Rafi.jpeg');" aria-label="Foto Muhammad Rafi Pratama"></div>
+              <div class="team-avatar has-image" style="background-image: url('{{ url_for('static', filename='component/Rafi.jpeg') }}');" aria-label="Foto Muhammad Rafi Pratama"></div>
             </div>
             <p class="team-name">Muhammad Rafi Pratama</p>
             <span class="team-id">101012300161</span>
@@ -119,7 +108,7 @@
           </div>
           <div class="team-member">
             <div class="team-avatar-ring">
-              <div class="team-avatar has-image" style="background-image: url('../component/Mido.jpeg');" aria-label="Foto Bagus Mido Wijaya"></div>
+              <div class="team-avatar has-image" style="background-image: url('{{ url_for('static', filename='component/Mido.jpeg') }}');" aria-label="Foto Bagus Mido Wijaya"></div>
             </div>
             <p class="team-name">Bagus Mido Wijaya</p>
             <span class="team-id">101012430011</span>
@@ -127,7 +116,7 @@
           </div>
           <div class="team-member">
             <div class="team-avatar-ring">
-              <div class="team-avatar has-image" style="background-image: url('../component/Stef.jpeg');" aria-label="Foto Stefanus Indra Prasetya"></div>
+              <div class="team-avatar has-image" style="background-image: url('{{ url_for('static', filename='component/Stef.jpeg') }}');" aria-label="Foto Stefanus Indra Prasetya"></div>
             </div>
             <p class="team-name">Stefanus Indra Prasetya</p>
             <span class="team-id">101012430016</span>
@@ -170,10 +159,8 @@
 <footer class="footer">
   <p>© 2026 FreshScan AI · Sistem Klasifikasi Kesegaran Buah & Sayur berbasis Computer Vision & Deep Learning</p>
 </footer>
-<<<<<<< HEAD
-=======
 
-<script src="../js/theme.js"></script>
->>>>>>> c724260 (Update tampilan dan tambah fitur)
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/about.js') }}"></script>
 </body>
 </html>

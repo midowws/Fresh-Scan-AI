@@ -1,16 +1,21 @@
-const resultEmpty = document.getElementById('resultEmpty');
-const resultContent = document.getElementById('resultContent');
-const resultStatus = document.getElementById('resultStatus');
-const statusIcon = document.getElementById('statusIcon');
-const statusText = document.getElementById('statusText');
-const confidenceValue = document.getElementById('confidenceValue');
-const confidenceFill = document.getElementById('confidenceFill');
-const recommendationText = document.getElementById('recommendationText');
-const detailType = document.getElementById('detailType');
-const detailQuality = document.getElementById('detailQuality');
-const detailTime = document.getElementById('detailTime');
+let resultEmpty, resultContent, resultStatus, statusIcon, statusText, confidenceValue, confidenceFill, recommendationText, detailType, detailQuality, detailTime;
+
+document.addEventListener('DOMContentLoaded', function() {
+  resultEmpty = document.getElementById('resultEmpty');
+  resultContent = document.getElementById('resultContent');
+  resultStatus = document.getElementById('resultStatus');
+  statusIcon = document.getElementById('statusIcon');
+  statusText = document.getElementById('statusText');
+  confidenceValue = document.getElementById('confidenceValue');
+  confidenceFill = document.getElementById('confidenceFill');
+  recommendationText = document.getElementById('recommendationText');
+  detailType = document.getElementById('detailType');
+  detailQuality = document.getElementById('detailQuality');
+  detailTime = document.getElementById('detailTime');
+});
 
 function resetResult() {
+  if (!resultEmpty || !resultContent) return;
   resultEmpty.style.display = 'flex';
   resultContent.style.display = 'none';
   confidenceFill.style.width = '0%';
@@ -18,6 +23,7 @@ function resetResult() {
 }
 
 function showResult(data) {
+  if (!resultEmpty || !confidenceFill) return;
   const prediction = data.prediction;
   const confidence = (data.confidence * 100).toFixed(1);
 

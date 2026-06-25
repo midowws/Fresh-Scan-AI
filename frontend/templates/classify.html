@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<<<<<<< HEAD
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FreshScan AI - Klasifikasi</title>
@@ -9,19 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-=======
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FreshScan AI - Klasifikasi</title>
-<link rel="stylesheet" href="/frontend/static/style.css">
-<script>
-  (function(){
-    var t = localStorage.getItem("freshscan-theme");
-    if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", t);
-  })();
-</script>
->>>>>>> c724260 (Update tampilan dan tambah fitur)
 </head>
 <body>
 
@@ -35,9 +21,9 @@
     <a href="/about" class="nav-link">Tentang</a>
   </div>
   <div class="nav-right">
-    <a href="about.html" class="lab-badge" title="Laboratorium Computer Vision & AI">
+    <a href="/about" class="lab-badge" title="Laboratorium Computer Vision & AI">
       <span class="lab-badge-mark">
-        <img src="../component/IMV.jpeg" alt="Logo Lab IMV" />
+        <img src="{{ url_for('static', filename='component/IMV.jpeg') }}" alt="Logo Lab IMV" />
       </span>
       <span class="lab-badge-text">
         <span class="lab-name">IMV LABORATORY</span>
@@ -65,11 +51,7 @@
         <span id="uploadText">📁 Pilih file atau seret ke sini</span>
       </label>
 
-<<<<<<< HEAD
       <div class="form-actions">
-        <button type="button" id="predictBtn" class="btn-primary" disabled>Unggah &amp; Analisis</button>
-        <button type="button" id="resetBtn" class="btn-ghost">Reset</button>
-=======
         <button class="btn-ghost full-width" id="openCameraBtn" type="button">Buka Kamera</button>
 
         <div class="camera-panel" id="cameraPanel" style="display:none;">
@@ -80,8 +62,8 @@
           </div>
         </div>
 
-        <button class="btn-primary full-width" id="predictBtn" disabled>Prediksi Kesegaran</button>
-        <button class="btn-ghost full-width" id="resetBtn" type="button">Reset Gambar</button>
+        <button type="button" id="predictBtn" class="btn-primary" disabled>Unggah &amp; Analisis</button>
+        <button type="button" id="resetBtn" class="btn-ghost">Reset</button>
 
         <div id="errorBox" class="error-box" style="display:none;"></div>
 
@@ -94,7 +76,6 @@
             <li>Ambil gambar dari jarak dekat agar detail tekstur terlihat jelas.</li>
           </ul>
         </div>
->>>>>>> c724260 (Update tampilan dan tambah fitur)
       </div>
 
       <div id="previewWrap" style="display:none; margin-top:16px; text-align:center;">
@@ -140,15 +121,8 @@
   <p>© 2026 FreshScan AI · Sistem Klasifikasi Kesegaran Buah &amp; Sayur berbasis Computer Vision &amp; Deep Learning</p>
 </footer>
 
-<<<<<<< HEAD
-<!-- result.js dulu, baru upload.js -->
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 <script src="{{ url_for('static', filename='js/result.js') }}"></script>
 <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
-
-=======
-<script src="../js/theme.js"></script>
-<script src="../js/upload.js"></script>
-<script src="../js/result.js"></script>
->>>>>>> c724260 (Update tampilan dan tambah fitur)
 </body>
 </html>
